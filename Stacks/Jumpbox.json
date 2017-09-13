@@ -1,0 +1,19 @@
+{
+  "Name": "Jumpbox",
+  "TemplatePath": "Templates/EC2/Jumpbox.json",
+  "Region": "us-east-1",
+  "Parameters": [
+    {
+      "ParameterKey": "VPCId",
+      "ParameterValue": "vpc-d9a09da0"
+    },
+    {
+      "ParameterKey": "SSHKeyName",
+      "ParameterValue": "redbag"
+    },
+    {
+      "ParameterKey": "PublicSubnets",
+      "ParameterValue": "subnet-03aaf859,subnet-6734e503"
+    }
+  ]
+}

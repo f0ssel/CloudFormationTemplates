@@ -1,0 +1,67 @@
+{
+  "Name": "EBApplication",
+  "TemplatePath": "Templates/EB/SingleTestLoadBalancedProd.json",
+  "Region": "us-east-1",
+  "Parameters": [
+    {
+      "ParameterKey": "ApplicationName",
+      "ParameterValue": "Sample-PHP"
+    },
+    {
+      "ParameterKey": "ApplicationDescription",
+      "ParameterValue": "Example PHP Application"
+    },
+    {
+      "ParameterKey": "SolutionStack",
+      "ParameterValue": "64bit Amazon Linux 2017.03 v2.4.4 running PHP 7.0"
+    },
+    {
+      "ParameterKey": "VPCID",
+      "ParameterValue": "vpc-d9a09da0"
+    },
+    {
+      "ParameterKey": "InstanceSubnets",
+      "ParameterValue": "subnet-b8abf9e2,subnet-6034e504"
+    },
+    {
+      "ParameterKey": "ELBSubnets",
+      "ParameterValue": "subnet-03aaf859,subnet-6734e503"
+    },
+    {
+      "ParameterKey": "JumpboxSecurityGroupId",
+      "ParameterValue": "sg-dcdff9ac"
+    },
+    {
+      "ParameterKey": "HostedZone",
+      "ParameterValue": "redbagapp.com."
+    },
+    {
+      "ParameterKey": "ProdInstanceType",
+      "ParameterValue": "t2.micro"
+    },
+    {
+      "ParameterKey": "ProdURL",
+      "ParameterValue": "eb-prod.redbagapp.com."
+    },
+    {
+      "ParameterKey": "ProdMinimumInstances",
+      "ParameterValue": "1"
+    },
+    {
+      "ParameterKey": "ProdMaximumInstances",
+      "ParameterValue": "4"
+    },
+    {
+      "ParameterKey": "TestInstanceType",
+      "ParameterValue": "t2.micro"
+    },
+    {
+      "ParameterKey": "TestURL",
+      "ParameterValue": "eb-test.redbagapp.com."
+    },
+    {
+      "ParameterKey": "SSHKeyName",
+      "ParameterValue": "redbag"
+    }
+  ]
+}

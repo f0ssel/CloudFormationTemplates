@@ -1,0 +1,430 @@
+{
+  "Description": "Elastic Beanstalk application with load balanced Test and Prod environments",
+  "Parameters": {
+    "ApplicationName": {
+      "Type": "String"
+    },
+    "ApplicationDescription": {
+      "Type": "String"
+    },
+    "SolutionStack": {
+      "Type": "String"
+    },
+    "VPCID": {
+      "Type": "AWS::EC2::VPC::Id"
+    },
+    "InstanceSubnets": {
+      "Type": "String"
+    },
+    "ELBSubnets": {
+      "Type": "String"
+    },
+    "HostedZone": {
+      "Type": "String"
+    },
+    "ProdInstanceType": {
+      "Type": "String"
+    },
+    "ProdURL": {
+      "Type": "String"
+    },
+    "ProdMinimumInstances": {
+      "Type": "Number"
+    },
+    "ProdMaximumInstances": {
+      "Type": "Number"
+    },
+    "TestInstanceType": {
+      "Type": "String"
+    },
+    "TestURL": {
+      "Type": "String"
+    },
+    "TestMinimumInstances": {
+      "Type": "Number"
+    },
+    "TestMaximumInstances": {
+      "Type": "Number"
+    }
+  },
+  "Mappings": {},
+  "Conditions": {},
+  "Resources": {
+    "Application": {
+      "Type": "AWS::ElasticBeanstalk::Application",
+      "Properties": {
+        "ApplicationName": {
+          "Ref": "ApplicationName"
+        },
+        "Description": {
+          "Ref": "ApplicationDescription"
+        }
+      }
+    },
+    "ProdEnvironment": {
+      "Type": "AWS::ElasticBeanstalk::Environment",
+      "Properties": {
+        "ApplicationName": {
+          "Ref": "Application"
+        },
+        "EnvironmentName": {
+          "Fn::Join": ["", [{
+            "Ref": "Application"
+          }, "-Prod"]]
+        },
+        "CNAMEPrefix": {
+          "Fn::Join": ["", [{
+            "Ref": "Application"
+          }, "-Prod"]]
+        },
+        "Description": {
+          "Ref": "ApplicationDescription"
+        },
+        "Tier": {
+          "Type": "Standard",
+          "Name": "WebServer"
+        },
+        "OptionSettings": [{
+            "Namespace": "aws:autoscaling:launchconfiguration",
+            "OptionName": "IamInstanceProfile",
+            "Value": {
+              "Ref": "InstanceProfile"
+            }
+          },
+          {
+            "Namespace": "aws:autoscaling:launchconfiguration",
+            "OptionName": "InstanceType",
+            "Value": {
+              "Ref": "ProdInstanceType"
+            }
+          },
+          {
+            "Namespace": "aws:elasticbeanstalk:environment",
+            "OptionName": "EnvironmentType",
+            "Value": "LoadBalanced"
+          },
+          {
+            "Namespace": "aws:autoscaling:asg",
+            "OptionName": "MinSize",
+            "Value": {
+              "Ref": "ProdMinimumInstances"
+            }
+          },
+          {
+            "Namespace": "aws:autoscaling:asg",
+            "OptionName": "MaxSize",
+            "Value": {
+              "Ref": "ProdMaximumInstances"
+            }
+          },
+          {
+            "Namespace": "aws:elb:loadbalancer",
+            "OptionName": "CrossZone",
+            "Value": "true"
+          },
+          {
+            "Namespace": "aws:elasticbeanstalk:command",
+            "OptionName": "DeploymentPolicy",
+            "Value": "Immutable"
+          },
+          {
+            "Namespace": "aws:ec2:vpc",
+            "OptionName": "VPCId",
+            "Value": {
+              "Ref": "VPCID"
+            }
+          },
+          {
+            "Namespace": "aws:ec2:vpc",
+            "OptionName": "Subnets",
+            "Value": {
+              "Ref": "InstanceSubnets"
+            }
+          },
+          {
+            "Namespace": "aws:ec2:vpc",
+            "OptionName": "ELBSubnets",
+            "Value": {
+              "Ref": "ELBSubnets"
+            }
+          },
+          {
+            "Namespace": "aws:ec2:vpc",
+            "OptionName": "AssociatePublicIpAddress",
+            "Value": "false"
+          },
+          {
+            "Namespace": "aws:autoscaling:updatepolicy:rollingupdate",
+            "OptionName": "MinInstancesInService",
+            "Value": {
+              "Ref": "ProdMinimumInstances"
+            }
+          },
+          {
+            "Namespace": "aws:autoscaling:updatepolicy:rollingupdate",
+            "OptionName": "MaxBatchSize",
+            "Value": "1"
+          },
+          {
+            "Namespace": "aws:autoscaling:updatepolicy:rollingupdate",
+            "OptionName": "RollingUpdateEnabled",
+            "Value": "true"
+          },
+          {
+            "Namespace": "aws:autoscaling:updatepolicy:rollingupdate",
+            "OptionName": "RollingUpdateType",
+            "Value": "Immutable"
+          },
+          {
+            "Namespace": "aws:elasticbeanstalk:environment",
+            "OptionName": "ServiceRole",
+            "Value": "aws-elasticbeanstalk-service-role"
+          },
+          {
+            "Namespace": "aws:autoscaling:launchconfiguration",
+            "OptionName": "SecurityGroups",
+            "Value": {
+              "Ref": "InstanceSecurityGroup"
+            }
+          },
+          {
+            "Namespace": "aws:elasticbeanstalk:healthreporting:system",
+            "OptionName": "SystemType",
+            "Value": "enhanced"
+          },
+          {
+            "Namespace": "aws:autoscaling:launchconfiguration",
+            "OptionName": "EC2KeyName",
+            "Value": {
+              "Ref": "SSHKeyName"
+            }
+          }
+        ],
+        "SolutionStackName": {
+          "Ref": "SolutionStack"
+        }
+      }
+    },
+    "TestEnvironment": {
+      "Type": "AWS::ElasticBeanstalk::Environment",
+      "Properties": {
+        "ApplicationName": {
+          "Ref": "Application"
+        },
+        "EnvironmentName": {
+          "Fn::Join": ["", [{
+            "Ref": "Application"
+          }, "-Test"]]
+        },
+        "CNAMEPrefix": {
+          "Fn::Join": ["", [{
+            "Ref": "Application"
+          }, "-Test"]]
+        },
+        "Description": {
+          "Ref": "ApplicationDescription"
+        },
+        "Tier": {
+          "Type": "Standard",
+          "Name": "WebServer"
+        },
+        "OptionSettings": [{
+            "Namespace": "aws:autoscaling:launchconfiguration",
+            "OptionName": "IamInstanceProfile",
+            "Value": {
+              "Ref": "InstanceProfile"
+            }
+          },
+          {
+            "Namespace": "aws:autoscaling:launchconfiguration",
+            "OptionName": "InstanceType",
+            "Value": {
+              "Ref": "TestInstanceType"
+            }
+          },
+          {
+            "Namespace": "aws:elasticbeanstalk:environment",
+            "OptionName": "EnvironmentType",
+            "Value": "LoadBalanced"
+          },
+          {
+            "Namespace": "aws:autoscaling:asg",
+            "OptionName": "MinSize",
+            "Value": {
+              "Ref": "TestMinimumInstances"
+            }
+          },
+          {
+            "Namespace": "aws:autoscaling:asg",
+            "OptionName": "MaxSize",
+            "Value": {
+              "Ref": "TestMaximumInstances"
+            }
+          },
+          {
+            "Namespace": "aws:elb:loadbalancer",
+            "OptionName": "CrossZone",
+            "Value": "true"
+          },
+          {
+            "Namespace": "aws:elasticbeanstalk:command",
+            "OptionName": "DeploymentPolicy",
+            "Value": "Immutable"
+          },
+          {
+            "Namespace": "aws:ec2:vpc",
+            "OptionName": "VPCId",
+            "Value": {
+              "Ref": "VPCID"
+            }
+          },
+          {
+            "Namespace": "aws:ec2:vpc",
+            "OptionName": "Subnets",
+            "Value": {
+              "Ref": "InstanceSubnets"
+            }
+          },
+          {
+            "Namespace": "aws:ec2:vpc",
+            "OptionName": "ELBSubnets",
+            "Value": {
+              "Ref": "ELBSubnets"
+            }
+          },
+          {
+            "Namespace": "aws:ec2:vpc",
+            "OptionName": "AssociatePublicIpAddress",
+            "Value": "false"
+          },
+          {
+            "Namespace": "aws:autoscaling:updatepolicy:rollingupdate",
+            "OptionName": "MinInstancesInService",
+            "Value": {
+              "Ref": "TestMinimumInstances"
+            }
+          },
+          {
+            "Namespace": "aws:autoscaling:updatepolicy:rollingupdate",
+            "OptionName": "MaxBatchSize",
+            "Value": "1"
+          },
+          {
+            "Namespace": "aws:autoscaling:updatepolicy:rollingupdate",
+            "OptionName": "RollingUpdateEnabled",
+            "Value": "true"
+          },
+          {
+            "Namespace": "aws:autoscaling:updatepolicy:rollingupdate",
+            "OptionName": "RollingUpdateType",
+            "Value": "Immutable"
+          },
+          {
+            "Namespace": "aws:elasticbeanstalk:environment",
+            "OptionName": "ServiceRole",
+            "Value": "aws-elasticbeanstalk-service-role"
+          },
+          {
+            "Namespace": "aws:autoscaling:launchconfiguration",
+            "OptionName": "SecurityGroups",
+            "Value": {
+              "Ref": "InstanceSecurityGroup"
+            }
+          },
+          {
+            "Namespace": "aws:elasticbeanstalk:healthreporting:system",
+            "OptionName": "SystemType",
+            "Value": "enhanced"
+          }
+        ],
+        "SolutionStackName": {
+          "Ref": "SolutionStack"
+        }
+      }
+    },
+    "EC2Role": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [{
+            "Effect": "Allow",
+            "Principal": {
+              "Service": ["ec2.amazonaws.com"]
+            },
+            "Action": ["sts:AssumeRole"]
+          }]
+        },
+        "ManagedPolicyArns": ["arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier"],
+        "RoleName": {
+          "Fn::Join": ["", [{
+            "Ref": "ApplicationName"
+          }, "-ec2"]]
+        }
+      }
+    },
+    "InstanceProfile": {
+      "Type": "AWS::IAM::InstanceProfile",
+      "Properties": {
+        "Roles": [{
+          "Ref": "EC2Role"
+        }],
+        "InstanceProfileName": {
+          "Ref": "EC2Role"
+        }
+      }
+    },
+    "InstanceSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "For custom rules on EB Application",
+        "VpcId": {
+          "Ref": "VPCID"
+        },
+        "Tags": [{
+          "Key": "Name",
+          "Value": {
+            "Fn::Join": ["", [{
+              "Ref": "ApplicationName"
+            }, "-EC2"]]
+          }
+        }]
+      }
+    },
+    "ProdRoute53": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "Comment": "Production environment dns record to EB App",
+        "Type": "CNAME",
+        "Name": {
+          "Ref": "ProdURL"
+        },
+        "HostedZoneName": {
+          "Ref": "HostedZone"
+        },
+        "ResourceRecords": [{
+          "Fn::GetAtt": ["ProdEnvironment", "EndpointURL"]
+        }],
+        "TTL": "300"
+      }
+    },
+    "TestRoute53": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "Comment": "Test environment dns record to EB App",
+        "Type": "CNAME",
+        "Name": {
+          "Ref": "TestURL"
+        },
+        "HostedZoneName": {
+          "Ref": "HostedZone"
+        },
+        "ResourceRecords": [{
+          "Fn::GetAtt": ["TestEnvironment", "EndpointURL"]
+        }],
+        "TTL": "300"
+      }
+    }
+  },
+  "Outputs": {}
+}

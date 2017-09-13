@@ -1,0 +1,19 @@
+{
+  "Name": "VPC",
+  "TemplatePath": "Templates/VPC/MultiAZ.json",
+  "Region": "us-east-1",
+  "Parameters":[
+    {
+      "ParameterKey": "VPCName",
+      "ParameterValue": "VPC"
+    },
+    {
+      "ParameterKey": "NumberOfAZs",
+      "ParameterValue": "2"
+    },
+    {
+      "ParameterKey": "MultiAZNAT",
+      "ParameterValue": "true"
+    }
+  ]
+}
