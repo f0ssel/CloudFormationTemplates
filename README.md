@@ -1,4 +1,4 @@
-# jt_infrastructure
+# FreelanceInfrastructure
 
 # Table of Contents
 
