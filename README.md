@@ -1,6 +1,8 @@
 # FreelanceInfrastructure
 
-# Table of Contents
+The repository contains Cloudformation templates and tooling for creating and updating standardized AWS resources. 
+
+## Table of Contents
 
 ### General
 
