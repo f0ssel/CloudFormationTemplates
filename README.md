@@ -1,4 +1,4 @@
-# FreelanceInfrastructure
+# CloudFormationTemplates
 
 The repository contains Cloudformation templates and tooling for creating and updating standardized AWS resources. 
 
